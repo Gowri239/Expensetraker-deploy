@@ -11,6 +11,8 @@ const https = require('https')
 const dotenv = require('dotenv')
 dotenv.config()
 
+// console.log(require('crypto').randomBytes(256).toString('base64'));
+
 const userRoutes = require('./routes/users')
 const expenseRoutes = require('./routes/expense')
 const purchaseRoutes = require('./routes/purchase')
@@ -27,13 +29,21 @@ const bcrypt = require('bcrypt')
 
 const app = express()
 app.use(cors())
+// app.use(express.json())
+// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ extended: false }))
 
-app.use(bodyParser.json())
+// const privateKey = fs.readFileSync('server.key')
+// const certificate = fs.readFileSync('server.cert')
 
 app.use('/user',userRoutes)
 app.use('/expense',expenseRoutes)
 app.use('/purchase',purchaseRoutes)
 app.use('/password',resetPasswordRoutes)
+
+// app.use((req,res)=>{
+//   res.sendFile(path.join(__dirname ,`views/${req.url}` ))
+// })
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname,'access.log'),{flag:'a'})
 
@@ -57,7 +67,9 @@ Downloadurl.belongsTo(User);
 sequelize.sync()
   .then(() => {
     app.listen(process.env.PORT || 3000) 
-  })
+      // https.createServer({key: privateKey,cert: certificate},app).listen(3000,()=>{
+      //   console.log("running")
+      })
   .catch((err) => {
     console.log(err)
   })
